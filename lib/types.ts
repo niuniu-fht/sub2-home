@@ -22,6 +22,9 @@ export interface SiteConfig {
   description: string;
   apiUrl: string;
   apiButtonText: string;
+  // 文档 / 测试台使用的真实接口 Base URL（含版本号，如 https://code2alita.com/v1）。
+  // 留空则自动取「跳转地址」的域名 + /v1。
+  apiBaseUrl: string;
   docsUrl: string;
   // 在线生图平台入口（留空则不显示按钮）
   imageUrl: string;

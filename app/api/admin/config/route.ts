@@ -23,6 +23,7 @@ function sanitize(body: any): Config {
       description: String(site.description ?? ""),
       apiUrl: String(site.apiUrl ?? ""),
       apiButtonText: String(site.apiButtonText ?? "进入 API 控制台"),
+      apiBaseUrl: String(site.apiBaseUrl ?? ""),
       docsUrl: String(site.docsUrl ?? ""),
       imageUrl: String(site.imageUrl ?? ""),
       imageButtonText: String(site.imageButtonText ?? "进入在线生图平台"),

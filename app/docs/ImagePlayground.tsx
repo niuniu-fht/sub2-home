@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 
 const SIZES = ["1024x1024", "1536x1024", "1024x1536", "auto"];
 
-export default function ImagePlayground({ model }: { model: string }) {
-  const [baseUrl, setBaseUrl] = useState("https://code2alita.com");
+export default function ImagePlayground({ model, baseUrl: defaultBase }: { model: string; baseUrl: string }) {
+  const [baseUrl, setBaseUrl] = useState(defaultBase || "https://code2alita.com/v1");
   const [apiKey, setApiKey] = useState("");
   const [mdl, setMdl] = useState(model || "gpt-image-2");
   const [prompt, setPrompt] = useState("一只戴着宇航员头盔的柴犬，赛博朋克风格，霓虹灯光");
@@ -105,7 +105,7 @@ export default function ImagePlayground({ model }: { model: string }) {
         <button className="btn btn-primary" onClick={run} disabled={loading}>
           {loading ? `生成中… ${elapsed.toFixed(1)}s` : "生成图片"}
         </button>
-        <span className="pg-hint">调用 {baseUrl.replace(/\/+$/, "")}/v1/images/generations</span>
+        <span className="pg-hint">调用 {baseUrl.replace(/\/+$/, "")}/images/generations</span>
       </div>
 
       {error ? <div className="pg-error">⚠️ {error}</div> : null}

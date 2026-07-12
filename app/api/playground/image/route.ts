@@ -27,7 +27,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "请填写提示词" }, { status: 400 });
   }
 
-  const endpoint = `${baseUrl}/v1/images/generations`;
+  // baseUrl 已包含版本号（如 https://code2alita.com/v1），直接拼接接口路径。
+  const endpoint = `${baseUrl}/images/generations`;
 
   try {
     const upstream = await fetch(endpoint, {

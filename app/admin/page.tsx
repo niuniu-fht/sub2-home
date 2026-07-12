@@ -198,12 +198,16 @@ export default function AdminPage() {
             <textarea className="textarea" value={config.site.description} onChange={(e) => setSite("description", e.target.value)} />
           </div>
           <div className="field">
-            <label>API 地址（跳转目标 sub2api）</label>
-            <input className="input" value={config.site.apiUrl} onChange={(e) => setSite("apiUrl", e.target.value)} placeholder="https://api.example.com" />
+            <label>跳转地址（控制台，按钮用）</label>
+            <input className="input" value={config.site.apiUrl} onChange={(e) => setSite("apiUrl", e.target.value)} placeholder="https://code2alita.com/dashboard" />
           </div>
           <div className="field">
             <label>跳转按钮文字</label>
             <input className="input" value={config.site.apiButtonText} onChange={(e) => setSite("apiButtonText", e.target.value)} />
+          </div>
+          <div className="field full">
+            <label>API Base URL（文档/测试用，含 /v1，留空则自动取跳转地址的域名）</label>
+            <input className="input" value={config.site.apiBaseUrl} onChange={(e) => setSite("apiBaseUrl", e.target.value)} placeholder="https://code2alita.com/v1" />
           </div>
           <div className="field full">
             <label>文档地址（可选）</label>

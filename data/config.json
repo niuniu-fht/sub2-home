@@ -5,6 +5,7 @@
     "description": "聚合主流大模型，OpenAI 兼容格式，稳定高速。点击下方按钮进入 API 控制台，或浏览下方模型广场查看当前支持的模型。",
     "apiUrl": "https://www.code2alita.com/dashboard",
     "apiButtonText": "进入 API 控制台",
+    "apiBaseUrl": "https://code2alita.com/v1",
     "docsUrl": "https://api.example.com/docs",
     "imageUrl": "https://image.code2alita.com",
     "imageButtonText": "进入在线生图平台",

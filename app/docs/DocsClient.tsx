@@ -184,7 +184,7 @@ console.log(resp.data[0].url);`;
             无需写代码，直接在下方填入 API Key 和提示词即可调用 OpenAI 图像接口生成图片。请求经由本站服务端转发到{" "}
             <code className="inline">/v1/images/generations</code>，Key 仅本次调用透传、不会保存。
           </p>
-          <ImagePlayground model={model} />
+          <ImagePlayground model={model} baseUrl={baseUrl} />
         </section>
 
         <section id="image" className="doc-section">

@@ -6,9 +6,16 @@ export const dynamic = "force-dynamic";
 export default async function DocsPage() {
   const config = await readConfig();
   const { site } = config;
-  // 取后台配置的 API 地址推导出 Base URL（去掉结尾斜杠后接 /v1）。
-  const base = (site.apiUrl || "https://api.example.com").replace(/\/+$/, "");
-  const baseUrl = `${base}/v1`;
+  // Base URL 优先用后台单独配置的「API Base URL」；
+  // 留空时，从「跳转地址」里取域名（origin）再拼 /v1，避免把 /dashboard 这种控制台路径带进去。
+  let baseUrl = (site.apiBaseUrl || "").trim().replace(/\/+$/, "");
+  if (!baseUrl) {
+    try {
+      baseUrl = `${new URL(site.apiUrl).origin}/v1`;
+    } catch {
+      baseUrl = "https://api.example.com/v1";
+    }
+  }
   const firstModel = config.models[0]?.id || "gpt-image-2";
 
   return (
