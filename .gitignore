@@ -1,0 +1,11 @@
+/node_modules
+/.next
+/out
+/build
+*.tsbuildinfo
+next-env.d.ts
+.env*.local
+.DS_Store
+
+# 运行时生成的管理员密码哈希，不入库
+/data/auth.json

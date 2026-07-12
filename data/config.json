@@ -1,0 +1,32 @@
+{
+  "site": {
+    "title": "Nektra API",
+    "subtitle": "统一 API 中转 · 一个密钥调用全部大模型",
+    "description": "聚合主流大模型，OpenAI 兼容格式，稳定高速。点击下方按钮进入 API 控制台，或浏览下方模型广场查看当前支持的模型。",
+    "apiUrl": "https://www.code2alita.com/dashboard",
+    "apiButtonText": "进入 API 控制台",
+    "docsUrl": "https://api.example.com/docs",
+    "imageUrl": "https://image.code2alita.com",
+    "imageButtonText": "进入在线生图平台",
+    "apiOpenInNewTab": true
+  },
+  "models": [
+    {
+      "id": "gpt-image-2",
+      "name": "GPT Image 2",
+      "provider": "OpenAI",
+      "description": "OpenAI 图像生成模型，支持文生图与图像编辑，画质细腻、指令跟随准确。",
+      "context": "-",
+      "tags": [
+        "图像生成",
+        "推荐"
+      ],
+      "pricing": {
+        "size1k": "$0.02 / 张",
+        "size2k": "$0.04 / 张",
+        "size4k": "$0.08 / 张"
+      },
+      "enabled": true
+    }
+  ]
+}

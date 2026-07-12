@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    container_name: nektra-api-home
+    ports:
+      # 左边是服务器对外端口，可改成 80 或其它；右边固定 3000
+      - "3000:3000"
+    environment:
+      # ⚠️ 部署前务必修改这两个值
+      - ADMIN_PASSWORD=change-this-password
+      - AUTH_SECRET=change-this-to-a-long-random-string
+    volumes:
+      # 把模型/站点配置持久化到宿主机，容器重建也不丢，后台改的内容直接落到这里
+      - ./data:/app/data
+    restart: unless-stopped
