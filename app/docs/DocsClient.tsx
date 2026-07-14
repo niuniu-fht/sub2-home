@@ -32,6 +32,7 @@ const NAV = [
   ["auth", "接口地址 & 认证"],
   ["playground", "在线测试出图"],
   ["image", "图像生成"],
+  ["edit", "图像编辑"],
   ["chat", "对话调用"],
   ["models", "支持的模型"],
   ["errors", "错误码"],
@@ -108,6 +109,44 @@ const resp = await client.images.generate({
 });
 console.log(resp.data[0].url);`;
 
+  const curlEdit = `curl ${baseUrl}/images/edits \\
+  -H "Authorization: Bearer $SUB2API_KEY" \\
+  -F model="${model}" \\
+  -F image="@input.png" \\
+  -F prompt="给图中的猫戴上一顶红色圣诞帽" \\
+  -F size="1024x1024"`;
+
+  const pyEdit = `from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_SUB2API_KEY",
+    base_url="${baseUrl}",
+)
+
+resp = client.images.edit(
+    model="${model}",
+    image=open("input.png", "rb"),
+    prompt="给图中的猫戴上一顶红色圣诞帽",
+    size="1024x1024",
+)
+print(resp.data[0].url)`;
+
+  const nodeEdit = `import OpenAI, { toFile } from "openai";
+import fs from "node:fs";
+
+const client = new OpenAI({
+  apiKey: process.env.SUB2API_KEY,
+  baseURL: "${baseUrl}",
+});
+
+const resp = await client.images.edit({
+  model: "${model}",
+  image: await toFile(fs.createReadStream("input.png"), "input.png"),
+  prompt: "给图中的猫戴上一顶红色圣诞帽",
+  size: "1024x1024",
+});
+console.log(resp.data[0].url);`;
+
   const curlChat = `curl ${baseUrl}/chat/completions \\
   -H "Authorization: Bearer $SUB2API_KEY" \\
   -H "Content-Type: application/json" \\
@@ -181,8 +220,7 @@ console.log(resp.data[0].url);`;
         <section id="playground" className="doc-section">
           <h2>在线测试出图</h2>
           <p>
-            无需写代码，直接在下方填入 API Key 和提示词即可调用 OpenAI 图像接口生成图片。请求经由本站服务端转发到{" "}
-            <code className="inline">/v1/images/generations</code>，Key 仅本次调用透传、不会保存。
+            无需写代码，填入 API Key 和提示词即可测试。支持两种模式：<strong>文生图</strong>（<code className="inline">images/generations</code>）和 <strong>图像编辑</strong>（<code className="inline">images/edits</code>，需上传原图）。请求经本站服务端转发，Key 仅本次调用透传、不会保存。
           </p>
           <ImagePlayground model={model} baseUrl={baseUrl} />
         </section>
@@ -198,6 +236,24 @@ console.log(resp.data[0].url);`;
           <CodeBlock lang="python" code={pyImage} />
           <h3>Node.js</h3>
           <CodeBlock lang="javascript" code={nodeImage} />
+        </section>
+
+        <section id="edit" className="doc-section">
+          <h2>图像编辑</h2>
+          <p>
+            调用 <code className="inline">/images/edits</code> 接口，在已有图片基础上按提示词编辑（图生图）。与生成不同，该接口使用{" "}
+            <code className="inline">multipart/form-data</code> 上传文件：<code className="inline">image</code> 为原图（必填），<code className="inline">mask</code> 为可选蒙版（透明区域表示要修改的范围）。
+          </p>
+          <div className="callout">
+            <span className="ico">💡</span>
+            <span>可直接在上方「在线测试出图」切到「图像编辑」标签，上传图片即可测试本接口。</span>
+          </div>
+          <h3>cURL</h3>
+          <CodeBlock lang="bash" code={curlEdit} />
+          <h3>Python</h3>
+          <CodeBlock lang="python" code={pyEdit} />
+          <h3>Node.js</h3>
+          <CodeBlock lang="javascript" code={nodeEdit} />
         </section>
 
         <section id="chat" className="doc-section">
