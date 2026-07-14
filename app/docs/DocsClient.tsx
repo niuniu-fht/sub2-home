@@ -111,41 +111,44 @@ console.log(resp.data[0].url);`;
 
   const curlEdit = `curl ${baseUrl}/images/edits \\
   -H "Authorization: Bearer $SUB2API_KEY" \\
-  -F model="${model}" \\
-  -F image="@input.png" \\
-  -F prompt="给图中的猫戴上一顶红色圣诞帽" \\
-  -F size="1024x1024"`;
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "${model}",
+    "image": "https://example.com/cat.png",
+    "prompt": "给图中的猫戴上一顶红色圣诞帽",
+    "size": "1024x1024"
+  }'`;
 
-  const pyEdit = `from openai import OpenAI
+  const pyEdit = `import requests
 
-client = OpenAI(
-    api_key="YOUR_SUB2API_KEY",
-    base_url="${baseUrl}",
+resp = requests.post(
+    "${baseUrl}/images/edits",
+    headers={"Authorization": "Bearer YOUR_SUB2API_KEY"},
+    json={
+        "model": "${model}",
+        # image 可传公网图片 URL，或 base64（如 data:image/png;base64,xxxx）
+        "image": "https://example.com/cat.png",
+        "prompt": "给图中的猫戴上一顶红色圣诞帽",
+        "size": "1024x1024",
+    },
 )
+print(resp.json())`;
 
-resp = client.images.edit(
-    model="${model}",
-    image=open("input.png", "rb"),
-    prompt="给图中的猫戴上一顶红色圣诞帽",
-    size="1024x1024",
-)
-print(resp.data[0].url)`;
-
-  const nodeEdit = `import OpenAI, { toFile } from "openai";
-import fs from "node:fs";
-
-const client = new OpenAI({
-  apiKey: process.env.SUB2API_KEY,
-  baseURL: "${baseUrl}",
+  const nodeEdit = `const resp = await fetch("${baseUrl}/images/edits", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer " + process.env.SUB2API_KEY,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "${model}",
+    // image 可传公网图片 URL，或 base64（如 data:image/png;base64,xxxx）
+    image: "https://example.com/cat.png",
+    prompt: "给图中的猫戴上一顶红色圣诞帽",
+    size: "1024x1024",
+  }),
 });
-
-const resp = await client.images.edit({
-  model: "${model}",
-  image: await toFile(fs.createReadStream("input.png"), "input.png"),
-  prompt: "给图中的猫戴上一顶红色圣诞帽",
-  size: "1024x1024",
-});
-console.log(resp.data[0].url);`;
+console.log(await resp.json());`;
 
   const curlChat = `curl ${baseUrl}/chat/completions \\
   -H "Authorization: Bearer $SUB2API_KEY" \\
@@ -241,12 +244,11 @@ console.log(resp.data[0].url);`;
         <section id="edit" className="doc-section">
           <h2>图像编辑</h2>
           <p>
-            调用 <code className="inline">/images/edits</code> 接口，在已有图片基础上按提示词编辑（图生图）。与生成不同，该接口使用{" "}
-            <code className="inline">multipart/form-data</code> 上传文件：<code className="inline">image</code> 为原图（必填），<code className="inline">mask</code> 为可选蒙版（透明区域表示要修改的范围）。
+            调用 <code className="inline">/images/edits</code> 接口，在已有图片基础上按提示词编辑（图生图）。参数 <code className="inline">image</code> 为原图（必填），可传 <strong>公网图片 URL</strong> 或 <strong>base64</strong>（如 <code className="inline">data:image/png;base64,xxxx</code>）。
           </p>
           <div className="callout">
             <span className="ico">💡</span>
-            <span>可直接在上方「在线测试出图」切到「图像编辑」标签，上传图片即可测试本接口。</span>
+            <span>可直接在上方「在线测试出图」切到「图像编辑」标签，粘贴图片 URL 或 base64 即可测试本接口。</span>
           </div>
           <h3>cURL</h3>
           <CodeBlock lang="bash" code={curlEdit} />

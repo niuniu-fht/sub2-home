@@ -12,10 +12,8 @@ export default function ImagePlayground({ model, baseUrl: defaultBase }: { model
   const [mdl, setMdl] = useState(model || "gpt-image-2");
   const [prompt, setPrompt] = useState("一只戴着宇航员头盔的柴犬，赛博朋克风格，霓虹灯光");
   const [size, setSize] = useState("1024x1024");
-  // 图像编辑用：上传的原图与可选蒙版
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [maskFile, setMaskFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  // 图像编辑用：原图（公网 URL 或 base64）
+  const [image, setImage] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -29,12 +27,8 @@ export default function ImagePlayground({ model, baseUrl: defaultBase }: { model
     };
   }, []);
 
-  // 选择原图后生成本地预览缩略图。
-  const onPickImage = (f: File | null) => {
-    setImageFile(f);
-    if (preview) URL.revokeObjectURL(preview);
-    setPreview(f ? URL.createObjectURL(f) : null);
-  };
+  // 只有 URL 或 data: base64 才能直接预览。
+  const canPreview = /^(https?:\/\/|data:image\/)/i.test(image.trim());
 
   const base = baseUrl.replace(/\/+$/, "");
   const endpoint = mode === "generate" ? "images/generations" : "images/edits";
@@ -45,7 +39,7 @@ export default function ImagePlayground({ model, baseUrl: defaultBase }: { model
     setImg(null);
     if (!apiKey.trim()) return setError("请先填写 API Key");
     if (!prompt.trim()) return setError("请先填写提示词");
-    if (mode === "edit" && !imageFile) return setError("请先上传要编辑的图片");
+    if (mode === "edit" && !image.trim()) return setError("请先填写图片的公网 URL 或 base64");
 
     setLoading(true);
     setElapsed(0);
@@ -61,15 +55,11 @@ export default function ImagePlayground({ model, baseUrl: defaultBase }: { model
           body: JSON.stringify({ baseUrl, apiKey, model: mdl, prompt, size }),
         });
       } else {
-        const fd = new FormData();
-        fd.append("baseUrl", baseUrl);
-        fd.append("apiKey", apiKey);
-        fd.append("model", mdl);
-        fd.append("prompt", prompt);
-        fd.append("size", size);
-        fd.append("image", imageFile as File);
-        if (maskFile) fd.append("mask", maskFile);
-        res = await fetch("/api/playground/edit", { method: "POST", body: fd });
+        res = await fetch("/api/playground/edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ baseUrl, apiKey, model: mdl, prompt, size, image: image.trim() }),
+        });
       }
 
       const data = await res.json();
@@ -131,16 +121,16 @@ export default function ImagePlayground({ model, baseUrl: defaultBase }: { model
         </div>
 
         {mode === "edit" ? (
-          <>
-            <div className="field">
-              <label>原图（必填）</label>
-              <input className="input" type="file" accept="image/*" onChange={(e) => onPickImage(e.target.files?.[0] || null)} />
-            </div>
-            <div className="field">
-              <label>蒙版 mask（可选，透明区域为编辑范围）</label>
-              <input className="input" type="file" accept="image/*" onChange={(e) => setMaskFile(e.target.files?.[0] || null)} />
-            </div>
-          </>
+          <div className="field full">
+            <label>原图（公网 URL 或 base64，必填）</label>
+            <textarea
+              className="textarea"
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
+              rows={2}
+              placeholder="https://example.com/cat.png 或 data:image/png;base64,xxxx"
+            />
+          </div>
         ) : null}
 
         <div className="field full">
@@ -149,10 +139,10 @@ export default function ImagePlayground({ model, baseUrl: defaultBase }: { model
         </div>
       </div>
 
-      {mode === "edit" && preview ? (
+      {mode === "edit" && canPreview ? (
         <div className="pg-thumb">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={preview} alt="原图预览" />
+          <img src={image.trim()} alt="原图预览" />
           <span>原图预览</span>
         </div>
       ) : null}
